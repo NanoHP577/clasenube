@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tablas de multiplicar</title>
+    <style>
+        body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 20px; background: #f7f9fc; color:#0f1724; }
+        h1 { margin-bottom: 8px; }
+        .controls { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; align-items:center; }
+        label { font-size:14px; }
+        input[type="number"] { width:72px; padding:6px; border-radius:6px; border:1px solid #cbd5e1; }
+        button { padding:8px 12px; border-radius:6px; border: none; background:#2563eb; color:white; cursor:pointer; }
+        button.secondary { background:#64748b; }
+        .grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap:12px; }
+        .card { background:white; padding:12px; border-radius:8px; box-shadow: 0 1px 4px rgba(2,6,23,0.06); }
+        .card h3 { margin:0 0 8px 0; font-size:16px; }
+        .row { font-size:14px; margin:2px 0; }
+        small.tip { color:#475569; display:block; margin-top:8px; }
+    </style>
+</head>
+<body>
+    <h1>Tablas de multiplicar</h1>
+
+    <div class="controls">
+        <label>
+            Desde:
+            <input id="from" type="number" min="1" max="100" value="1" />
+        </label>
+
+        <label>
+            Hasta:
+            <input id="to" type="number" min="1" max="100" value="10" />
+        </label>
+
+        <label>
+            Hasta multiplicador:
+            <input id="maxMul" type="number" min="1" max="100" value="10" />
+        </label>
+
+        <button id="genBtn">Generar</button>
+        <button id="allBtn" class="secondary">Mostrar 1–12</button>
+        <button id="clearBtn" class="secondary">Limpiar</button>
+    </div>
+
+    <div id="output" class="grid" aria-live="polite"></div>
+    <small class="tip">Introduce un rango (por ejemplo 2–5) y hasta qué multiplicador mostrar. Pulsa "Mostrar 1–12" para ver las tablas comunes.</small>
+
+    <script>
+        const output = document.getElementById('output');
+        const fromInput = document.getElementById('from');
+        const toInput = document.getElementById('to');
+        const maxMulInput = document.getElementById('maxMul');
+        const genBtn = document.getElementById('genBtn');
+        const allBtn = document.getElementById('allBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
+
+        function generate(from, to, maxMul) {
+            output.innerHTML = '';
+            from = clamp(Math.floor(from), 1, 100);
+            to = clamp(Math.floor(to), 1, 100);
+            maxMul = clamp(Math.floor(maxMul), 1, 100);
+            if (to < from) [from, to] = [to, from];
+
+            for (let n = from; n <= to; n++) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                const title = document.createElement('h3');
+                title.textContent = `Tabla del ${n}`;
+                card.appendChild(title);
+
+                for (let m = 1; m <= maxMul; m++) {
+                    const row = document.createElement('div');
+                    row.className = 'row';
+                    row.textContent = `${n} × ${m} = ${n * m}`;
+                    card.appendChild(row);
+                }
+                output.appendChild(card);
+            }
+        }
+
+        genBtn.addEventListener('click', () => {
+            generate(+fromInput.value, +toInput.value, +maxMulInput.value);
+        });
+
+        allBtn.addEventListener('click', () => {
+            fromInput.value = 1;
+            toInput.value = 12;
+            maxMulInput.value = 10;
+            generate(1, 12, 10);
+        });
+
+        clearBtn.addEventListener('click', () => {
+            output.innerHTML = '';
+        });
+
+        // Mostrar un ejemplo inicial
+        generate(1, 10, 10);
+    </script>
+</body>
+</html>
